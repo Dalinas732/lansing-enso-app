@@ -1,8 +1,7 @@
 # 🌤 Lansing Temperature & ENSO Dashboard
 
-**Author:** [Your Name]  
-**Course:** CMSE 830 — Methods in Computational Modeling  
-**Instructor:** [Professor’s Name]  
+**Author:** Joshua Nicholson  
+**Course:** CMSE 830 — Foundations of Data Science
 **Semester:** Fall 2025  
 
 ---
@@ -44,13 +43,6 @@ These shifts affect weather worldwide — including **winter temperatures in the
 - **Variables Used:**
   - `Year`, `Month`, `high` (average monthly high temperature)
   - `ENSO_encoded` (ENSO phase index)
-  - Derived columns: `Season_Year`, temperature anomalies, freeze-day counts.
+  - Derived columns: `Season_Year`, temperature anomalies, freeze-day counts. ENSO PHASE correlations
 
 ---
-
-## 🧭 How to Run Locally
-
-### **1️⃣ Clone the repository**
-```bash
-git clone https://github.com/<your-username>/lansing-enso-app.git
-cd lansing-enso-app
