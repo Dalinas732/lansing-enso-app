@@ -74,6 +74,8 @@ st.markdown("""
 This dashboard explores long-term temperature patterns in **Lansing, Michigan**, using historical weather records from 1960 to 2024.  
 It highlights how **average temperatures** and the **number of freeze days** have changed over time, and examines how these patterns relate to  
 **ENSO (El Niño–Southern Oscillation)** phases — a recurring climate pattern in the Pacific Ocean that influences seasonal weather across North America.
+
+The energy demand forecast is only for winter months when the ENSO phase is most dominant for controlling weather.
 """)
 
 # ---------- Data loader ----------
@@ -944,7 +946,7 @@ def ml_1(df):
     Displays a discrete-color scatter plot in Streamlit.
     """
 
-    st.subheader("Machine Learning Model 1: ENSO → Winter Severity Prediction")
+    st.subheader("Machine Learning Model 1: Random Forest ENSO → Winter Severity Prediction")
 
     # ----------------------------------------------------
     # 1) Build winter_summary from df
