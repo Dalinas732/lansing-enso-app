@@ -1016,14 +1016,14 @@ def ml_1(df):
             subset['ENSO_encoded'],
             subset['Anomaly_Class_Encoded'],
             color=color_map[cls],
-            label=f"Predicted Class {cls}",
+            label=f"Demand Level {cls}",
             s=120,
             alpha=0.85,
             edgecolors='black'
         )
     
     ax.set_title(
-        "True Anomaly Class vs ENSO\nColored by Predicted Class (Discrete)",
+        "True Anomaly Class vs ENSO\nColored by Predicted Demand Level",
         fontsize=14, weight='bold'
     )
     ax.set_xlabel("ENSO Encoded (El Niño → La Niña)", fontsize=12)
@@ -1051,7 +1051,7 @@ with time_series_dashboard:
     df_ts = pd.read_csv("data/Retail_sales_of_electricity_monthly_res.csv", skiprows=4)
     time_series(df_ts)
     st.markdown("""
-    Using Random Forest Classifer to predict the energy demand based on ENSO alone.
+    Using Random Forest Classifer to predict the energy demand based on ENSO alone. The Demand Level goes from below average to above average on the scale -2 to +2
     """)
     winter_summary_df = pd.read_csv("data/winter_summary_with_ENSO.csv", low_memory=False)
     ml_1(winter_summary_df)
