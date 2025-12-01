@@ -1047,7 +1047,7 @@ with time_series_dashboard:
     st.markdown("""
     Using Random Forest Classifer to predict the energy demand based on ENSO alone.
     """)
-    winter_summar_df = pd.read_csv("data/winter_summary_with_ENSO.csv", low_memory=False)
+    winter_summary_df = pd.read_csv("data/winter_summary_with_ENSO.csv", low_memory=False)
     ml_1(winter_summary_df)
 
 with tab_dashboard:
