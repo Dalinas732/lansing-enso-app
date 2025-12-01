@@ -1234,6 +1234,6 @@ with tab_notes:
     
     This app explores lansing weather trends, how the ENSO phase affects its winters. And if it's possible to forecast energy demand purely based on ENSO prediction since this is forecasted months in advance before the season.
     
-    I combined theses three data sources and spliced them to be the same dimensions. Unfortunetly the energy demand data spans the last 20 years so only 20 datapoints. Statistics are low but for proof of concept I still deploy machine learning models.
+    Daily values were captured from the Lansing weather station and subjected to a variety of analyses. Annual winter temperatures were averaged to support comparison with both ENSO conditions and regional energy demand. Missing observations were addressed using interpolation-based imputation methods. ENSO categories were encoded into numerical values to enable statistical and machine-learning workflows. Finally, all three datasets were merged into a single, integrated dataset used for forecasting winter energy demand.
 
     """)
