@@ -70,13 +70,23 @@ p {
 """, unsafe_allow_html=True)
 
 st.markdown("""
-### 🌎 Lansing Temperature Trends and ENSO Impacts (1960–2024)
+### 🌎 Lansing Winter Climate, ENSO Influence, and Energy Demand Forecasting (1960–2024)
 
-This dashboard explores long-term temperature patterns in **Lansing, Michigan**, using historical weather records from 1960 to 2024.  
-It highlights how **average temperatures** and the **number of freeze days** have changed over time, and examines how these patterns relate to  
-**ENSO (El Niño–Southern Oscillation)** phases — a recurring climate pattern in the Pacific Ocean that influences seasonal weather across North America.
+This dashboard analyzes long-term winter climate patterns in **Lansing, Michigan**, using historical weather records from 1960–2024 and their relationship to the  
+**El Niño–Southern Oscillation (ENSO)** — a recurring Pacific Ocean climate cycle that strongly shapes winter conditions across North America.
 
-The energy demand forecast is only for winter months when the ENSO phase is most dominant for controlling weather.
+The app highlights:
+
+- How winter temperatures and freeze patterns have evolved over time  
+- How different ENSO phases (El Niño, Neutral, La Niña) influence winter severity in Michigan  
+- How these climate signals relate to **winter electricity demand**, which peaks during cold-season months  
+- Whether **ENSO forecasts**, available months before winter begins, can help anticipate the upcoming season’s energy demand category
+
+Because ENSO is one of the few large-scale climate drivers that is routinely predicted well in advance, this analysis focuses on **winter months** when its influence on Midwest weather is strongest.  
+The goal is not to predict exact temperatures, but to classify each winter into severity categories that meaningfully reflect expected energy demand.
+
+The energy data was only from 2000 to present day, so the forecast anaylsis is limited based on available data.
+
 """)
 
 # ---------- Data loader ----------
