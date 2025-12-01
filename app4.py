@@ -867,6 +867,18 @@ def time_series(df):
     
     plt.tight_layout()
     st.pyplot(plt.gcf())      # ⬅️ instead of plt.show()
+
+    # -------------------------------
+    # 4. Winter-month data + Winter_Year
+    # -------------------------------
+    winter_df = df_clean[df_clean.index.month.isin([12, 1, 2])].copy()
+    
+    # Dec belongs to the *next* winter; Jan/Feb to current year
+    winter_df["Winter_Year"] = np.where(
+        winter_df.index.month == 12,
+        winter_df.index.year + 1,
+        winter_df.index.year
+    )
     
     
     # 5. Winter anomalies (z-score plot)
