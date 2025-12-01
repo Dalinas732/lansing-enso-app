@@ -904,6 +904,7 @@ def time_series(df):
     
     
     # 6. Winter severity by true winter year
+    winter_severity = winter_df.groupby("Winter_Year")["Deseasonalized"].mean()
     # -------------------------------
     plt.figure(figsize=(12, 5))
     plt.plot(winter_severity.index, winter_severity.values, "-o")
