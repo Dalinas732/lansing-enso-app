@@ -873,9 +873,9 @@ with tab_dashboard:
     left, mid, right = st.columns([1,3,1])
     with mid:
         st.image(img_small, caption="ENSO Phase Over Time.")
-    
 
-    
+
+
 
 with trends:
     st.title("Temperature Patterns (1960–2024)")
@@ -949,7 +949,7 @@ with trends:
     """)
     fig = plot_annual_anom(df_raw)     # <- your helper
     st.plotly_chart(fig, use_container_width=True)
-    
+
 
 with tab_notes:
     # Put assignment notes, methodology, references, or TODOs here
