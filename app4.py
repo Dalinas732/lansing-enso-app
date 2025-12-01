@@ -1048,7 +1048,24 @@ time_series_dashboard ,tab_dashboard, trends, tab_notes = st.tabs(["Forecasting 
 
 with time_series_dashboard:
     st.markdown("""
-    The following plots are Time Series Analysis removing the seasonailty in the annual Michigan energy demand
+    This dashboard analyzes Michigan’s winter electricity demand by separating long-term trends, seasonal cycles, and irregular variations.
+    We begin by decomposing the time series into its components—trend, seasonality, and residuals—to remove the repeating annual energy-use pattern. This produces a deseasonalized demand signal that highlights true year-to-year winter variability, rather than the predictable cold-weather baseline.
+    
+    Next, we focus on winter months (December–February) and calculate winter anomalies, a standardized measure showing how much each winter deviates from typical demand. This reveals unusually high-demand winters and helps classify each season into categories ranging from “Far Below Normal” to “Far Above Normal.”
+    
+    To understand what drives these differences, we link winter electricity demand to the ENSO index (El Niño–Southern Oscillation), one of the strongest large-scale climate patterns influencing North American winters. ENSO affects storm tracks, temperature anomalies, and the frequency of cold outbreaks across the Midwest, making it a meaningful predictor of heating-driven energy use.
+    
+    We then train a Random Forest classifier using ENSO values to predict the winter anomaly class. While ENSO alone cannot capture every factor behind demand spikes (such as Arctic outbreaks, polar vortex disturbances, local snowfall variability, or economic changes), it provides a useful baseline forecast. This machine learning model helps fill informational gaps by mapping known ENSO conditions to expected winter severity categories.
+    
+    Together, these tools offer:
+    
+    A clarified, seasonality-removed view of long-term energy demand
+    
+    A measurement of which winters were genuinely extreme
+    
+    A machine-learning model that links climate drivers to energy use
+    
+    A climate-informed framework for anticipating winter electrical demand in Michigan
     """)
     df_ts = pd.read_csv("data/Retail_sales_of_electricity_monthly_res.csv", skiprows=4)
     time_series(df_ts)
