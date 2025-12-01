@@ -919,7 +919,7 @@ def time_series(df):
     
     # 7. Highlight strong winter months on original series
     # -------------------------------
-    plt.figure(figsize=(6, 2))
+    plt.figure(figsize=(12, 6))
     plt.plot(df_clean.index, df_clean["Original"], color="lightgray", label="Original Demand")
     plt.scatter(
         strong_winter_months.index,
@@ -1008,7 +1008,7 @@ def ml_1(df):
 
     color_map = {cls: colors[i] for i, cls in enumerate(unique_classes)}
 
-    fig, ax = plt.subplots(figsize=(6, 2))
+    fig, ax = plt.subplots(figsize=(4, 4))
 
     for cls in unique_classes:
         subset = winter_summary[winter_summary['RF_Predicted_Class'] == cls]
