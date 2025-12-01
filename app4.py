@@ -882,6 +882,13 @@ def time_series(df):
     
     
     # 5. Winter anomalies (z-score plot)
+    mu = winter_df["Deseasonalized"].mean()
+    sigma = winter_df["Deseasonalized"].std()
+    
+    winter_df["Winter_Anomaly"] = (winter_df["Deseasonalized"] - mu) / sigma
+    
+    threshold = 1.2
+    strong_winter_months = winter_df[winter_df["Winter_Anomaly"] > threshold]
     # -------------------------------
     plt.figure(figsize=(12, 5))
     plt.plot(winter_df.index, winter_df["Winter_Anomaly"], "-o", label="Winter Anomaly")
