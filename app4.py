@@ -921,7 +921,7 @@ with time_series_dashboard:
     st.markdown("""
     The following plots are Time Series Analysis removing the seasonailty in the annual Michigan energy demand
     """)
-    df_ts = pd.read_csv("data/Retail_sales_of_electricity_monthly_res.csv", low_memory=False)
+    df_ts = pd.read_csv("data/Retail_sales_of_electricity_monthly_res.csv", skiprows=4)
     time_series(df_ts)
 
 
