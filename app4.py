@@ -1021,17 +1021,23 @@ def ml_1(df):
             alpha=0.85,
             edgecolors='black'
         )
-
+    
     ax.set_title(
         "True Anomaly Class vs ENSO\nColored by Predicted Class (Discrete)",
         fontsize=14, weight='bold'
     )
     ax.set_xlabel("ENSO Encoded (El Niño → La Niña)", fontsize=12)
-    ax.set_ylabel("True Anomaly Class (Encoded)", fontsize=12)
+    
+    # 🔥 Make the y-label highly visible
+    ax.set_ylabel("True Anomaly Class (Encoded)", fontsize=12, labelpad=10)
+    
     ax.grid(alpha=0.4)
     ax.legend(title="Predicted Class", bbox_to_anchor=(1.05, 1), loc='upper left')
+    
+    # ---- FIX FOR STREAMLIT ----
     fig.tight_layout()
-
+    plt.subplots_adjust(left=0.15)   # ⬅️ Reserve space for left labels
+    
     st.pyplot(fig)
 
 
