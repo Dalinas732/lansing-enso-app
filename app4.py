@@ -11,6 +11,7 @@ from statsmodels.tsa.seasonal import seasonal_decompose
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import GradientBoostingClassifier
 
 st.set_page_config(
     page_title="Michigan Temperature & ENSO Dashboard",
@@ -1042,38 +1043,103 @@ def ml_1(df):
     
     st.pyplot(fig,use_container_width=False)
 
+def ml_2(df):
+    """
+    Machine Learning Model 2:
+    Gradient Boosting classifier predicting winter severity class from ENSO.
+    """
+
+    st.subheader("Machine Learning Model 2: Gradient Boosting Winter Severity Classifier")
+
+    # Copy to avoid modifying original outside this function
+    winter_summary = df.copy()
+
+    # 1) Ensure anomaly class is encoded
+    class_mapping = {
+        "-2: Far Below Normal": -2,
+        "-1: Below Normal": -1,
+        "0: Normal": 0,
+        "+1: Above Normal": 1,
+        "+2: Far Above Normal": 2
+    }
+
+    if "Anomaly_Class_Encoded" not in winter_summary.columns:
+        winter_summary["Anomaly_Class_Encoded"] = winter_summary["Anomaly_Class"].map(class_mapping)
+
+    # 2) Prepare data
+    X = winter_summary[["ENSO_encoded"]].copy()
+    y = winter_summary["Anomaly_Class_Encoded"].copy()
+
+    # Drop missing rows
+    mask = X["ENSO_encoded"].notna() & y.notna()
+    X = X[mask]
+    y = y[mask]
+    winter_summary = winter_summary[mask].copy()
+
+    if X.empty:
+        st.warning("No valid rows available for ML after filtering missing ENSO/anomaly values.")
+        return
+
+    # 3) Train–test split
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.1, random_state=42
+    )
+
+    # 4) Train Gradient Boosting Classifier
+    gb_model = GradientBoostingClassifier(
+        n_estimators=300,
+        learning_rate=0.05,
+        max_depth=2,
+        random_state=42
+    )
+    gb_model.fit(X_train, y_train)
+
+    # Optional: simple accuracy metric
+    acc = gb_model.score(X_test, y_test)
+    st.markdown(f"**Test accuracy (Gradient Boosting):** {acc:.2f}")
+
+    # 5) Predict for all winters
+    winter_summary["GB_Predicted_Class"] = gb_model.predict(X)
+
+    # 6) Visualization
+    unique_classes = sorted(winter_summary["GB_Predicted_Class"].unique())
+    colors = plt.cm.tab10(np.linspace(0, 1, len(unique_classes)))
+    color_map = {cls: colors[i] for i, cls in enumerate(unique_classes)}
+
+    fig, ax = plt.subplots(figsize=(6.5, 4))
+
+    for cls in unique_classes:
+        subset = winter_summary[winter_summary["GB_Predicted_Class"] == cls]
+        ax.scatter(
+            subset["ENSO_encoded"],
+            subset["Anomaly_Class_Encoded"],
+            color=color_map[cls],
+            label=f"Predicted Class {cls}",
+            s=120,
+            alpha=0.85,
+            edgecolors="black",
+        )
+
+    ax.set_title(
+        "True Winter Severity vs ENSO\nColored by Gradient Boosting Prediction",
+        fontsize=12,
+        weight="bold",
+    )
+    ax.set_xlabel("ENSO Encoded (El Niño → La Niña)", fontsize=11)
+    ax.set_ylabel("True Anomaly Class (Encoded)", fontsize=11)
+    ax.grid(alpha=0.4)
+    ax.legend(title="Predicted Class", bbox_to_anchor=(1.05, 1), loc="upper left")
+
+    fig.tight_layout()
+    fig.subplots_adjust(left=0.18)
+
+    st.pyplot(fig, use_container_width=False)
+
+
 
 # --- Tabs at the top ---
 time_series_dashboard ,tab_dashboard, trends, tab_notes = st.tabs(["Forecasting Energy Demand","📊 ENSO Analysis", "📝 Trends","Notes and Methods"])
 
-with time_series_dashboard:
-    st.markdown("""
-    This dashboard analyzes Michigan’s winter electricity demand by separating long-term trends, seasonal cycles, and irregular variations.
-    We begin by decomposing the time series into its components—trend, seasonality, and residuals—to remove the repeating annual energy-use pattern. This produces a deseasonalized demand signal that highlights true year-to-year winter variability, rather than the predictable cold-weather baseline.
-    
-    Next, we focus on winter months (December–February) and calculate winter anomalies, a standardized measure showing how much each winter deviates from typical demand. This reveals unusually high-demand winters and helps classify each season into categories ranging from “Far Below Normal” to “Far Above Normal.”
-    
-    To understand what drives these differences, we link winter electricity demand to the ENSO index (El Niño–Southern Oscillation), one of the strongest large-scale climate patterns influencing North American winters. ENSO affects storm tracks, temperature anomalies, and the frequency of cold outbreaks across the Midwest, making it a meaningful predictor of heating-driven energy use.
-    
-    We then train a Random Forest classifier using ENSO values to predict the winter anomaly class. While ENSO alone cannot capture every factor behind demand spikes (such as Arctic outbreaks, polar vortex disturbances, local snowfall variability, or economic changes), it provides a useful baseline forecast. This machine learning model helps fill informational gaps by mapping known ENSO conditions to expected winter severity categories.
-    
-    Together, these tools offer:
-    
-    A clarified, seasonality-removed view of long-term energy demand
-    
-    A measurement of which winters were genuinely extreme
-    
-    A machine-learning model that links climate drivers to energy use
-    
-    A climate-informed framework for anticipating winter electrical demand in Michigan
-    """)
-    df_ts = pd.read_csv("data/Retail_sales_of_electricity_monthly_res.csv", skiprows=4)
-    time_series(df_ts)
-    st.markdown("""
-    Using Random Forest Classifer to predict the energy demand based on ENSO alone. The Demand Level goes from below average to above average on the scale -2 to +2
-    """)
-    winter_summary_df = pd.read_csv("data/winter_summary_with_ENSO.csv", low_memory=False)
-    ml_1(winter_summary_df)
 
 with tab_dashboard:
     st.markdown("""
@@ -1225,6 +1291,35 @@ with trends:
     fig = plot_annual_anom(df_raw)     # <- your helper
     st.plotly_chart(fig, use_container_width=True)
 
+with time_series_dashboard:
+    st.markdown("""
+    This dashboard analyzes Michigan’s winter electricity demand by separating long-term trends, seasonal cycles, and irregular variations.
+    We begin by decomposing the time series into its components—trend, seasonality, and residuals—to remove the repeating annual energy-use pattern. This produces a deseasonalized demand signal that highlights true year-to-year winter variability, rather than the predictable cold-weather baseline.
+    
+    Next, we focus on winter months (December–February) and calculate winter anomalies, a standardized measure showing how much each winter deviates from typical demand. This reveals unusually high-demand winters and helps classify each season into categories ranging from “Far Below Normal” to “Far Above Normal.”
+    
+    To understand what drives these differences, we link winter electricity demand to the ENSO index (El Niño–Southern Oscillation), one of the strongest large-scale climate patterns influencing North American winters. ENSO affects storm tracks, temperature anomalies, and the frequency of cold outbreaks across the Midwest, making it a meaningful predictor of heating-driven energy use.
+    
+    We then train a Random Forest classifier using ENSO values to predict the winter anomaly class. While ENSO alone cannot capture every factor behind demand spikes (such as Arctic outbreaks, polar vortex disturbances, local snowfall variability, or economic changes), it provides a useful baseline forecast. This machine learning model helps fill informational gaps by mapping known ENSO conditions to expected winter severity categories.
+    
+    Together, these tools offer:
+    
+    A clarified, seasonality-removed view of long-term energy demand
+    
+    A measurement of which winters were genuinely extreme
+    
+    A machine-learning model that links climate drivers to energy use
+    
+    A climate-informed framework for anticipating winter electrical demand in Michigan
+    """)
+    df_ts = pd.read_csv("data/Retail_sales_of_electricity_monthly_res.csv", skiprows=4)
+    time_series(df_ts)
+    st.markdown("""
+    Using Random Forest Classifer to predict the energy demand based on ENSO alone. The Demand Level goes from below average to above average on the scale -2 to +2
+    """)
+    winter_summary_df = pd.read_csv("data/winter_summary_with_ENSO.csv", low_memory=False)
+    ml_1(winter_summary_df)
+    ml_2(winter_summary_df)
 
 with tab_notes:
     # Put assignment notes, methodology, references, or TODOs here
