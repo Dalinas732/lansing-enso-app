@@ -1096,7 +1096,7 @@ def ml_2(df):
 
     # Optional: simple accuracy metric
     acc = gb_model.score(X_test, y_test)
-    st.markdown(f"**Test accuracy (Gradient Boosting):** {acc:.2f}")
+    #st.markdown(f"**Test accuracy (Gradient Boosting):** {acc:.2f}")
 
     # 5) Predict for all winters
     winter_summary["GB_Predicted_Class"] = gb_model.predict(X)
