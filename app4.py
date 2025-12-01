@@ -915,9 +915,9 @@ def time_series(df):
     st.pyplot(plt.gcf())      # ⬅️ instead of plt.show()
 
 # --- Tabs at the top ---
-time_series ,tab_dashboard, trends, tab_notes = st.tabs(["Forecasting Energy Demand","📊 ENSO Analysis", "📝 Trends","Notes and Methods"])
+time_series_dashboard ,tab_dashboard, trends, tab_notes = st.tabs(["Forecasting Energy Demand","📊 ENSO Analysis", "📝 Trends","Notes and Methods"])
 
-with time_series:
+with time_series_dashboard:
     st.markdown("""
     The following plots are Time Series Analysis removing the seasonailty in the annual Michigan energy demand
     """)
