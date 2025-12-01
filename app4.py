@@ -7,6 +7,7 @@ import plotly.graph_objects as go
 import plotly.express as px
 from pathlib import Path
 from PIL import Image
+from statsmodels.tsa.seasonal import seasonal_decompose
 
 
 st.set_page_config(
@@ -797,8 +798,132 @@ def plot_annual_anom(df):
     )
     return fig
 
+
+#  Time series of Energy Data
+def time_series(df):
+    figs = []
+    # 1. Prepare the time series
+    # -------------------------------
+    # Assuming df has columns: "Month", "residential million kilowatthours"
+    
+    df["Month"] = pd.to_datetime(df["Month"], format="%b %Y")
+    df = df.sort_values("Month")                # make sure it's chronological
+    df.set_index("Month", inplace=True)
+    
+    y = df["residential million kilowatthours"].astype(float)
+    
+    # -------------------------------
+    # 2. Seasonal decomposition
+    # -------------------------------
+    result = seasonal_decompose(
+        y,
+        model="additive",
+        period=12,                 # monthly data, yearly seasonality
+        extrapolate_trend="freq"
+    )
+    
+    trend = result.trend
+    seasonal = result.seasonal
+    resid = result.resid
+    deseasonalized = y - seasonal
+    
+    df_clean = pd.DataFrame({
+        "Original": y,
+        "Trend": trend,
+        "Seasonal": seasonal,
+        "Residual": resid,
+        "Deseasonalized": deseasonalized,
+    })
+    
+    # 3. Decomposition plots
+    # -------------------------------
+    plt.figure(figsize=(12, 10))
+    
+    plt.subplot(4, 1, 1)
+    plt.plot(df_clean.index, df_clean["Original"])
+    plt.title("Original Michigan Residential Energy Demand")
+    plt.ylabel("M kWh")
+    plt.grid(True, alpha=0.6)
+    
+    plt.subplot(4, 1, 2)
+    plt.plot(df_clean.index, df_clean["Trend"])
+    plt.title("Trend")
+    plt.ylabel("M kWh")
+    plt.grid(True, alpha=0.6)
+    
+    plt.subplot(4, 1, 3)
+    plt.plot(df_clean.index, df_clean["Seasonal"])
+    plt.title("Seasonal Component")
+    plt.ylabel("M kWh")
+    plt.grid(True, alpha=0.6)
+    
+    plt.subplot(4, 1, 4)
+    plt.plot(df_clean.index, df_clean["Residual"])
+    plt.title("Residual (y - trend - seasonal)")
+    plt.ylabel("M kWh")
+    plt.xlabel("Date")
+    plt.grid(True, alpha=0.6)
+    
+    plt.tight_layout()
+    st.pyplot(plt.gcf())      # ⬅️ instead of plt.show()
+    
+    
+    # 5. Winter anomalies (z-score plot)
+    # -------------------------------
+    plt.figure(figsize=(12, 5))
+    plt.plot(winter_df.index, winter_df["Winter_Anomaly"], "-o", label="Winter Anomaly")
+    plt.axhline(threshold, linestyle="--", color="red",
+                label=f"Strong Winter Threshold ({threshold:.1f}σ)")
+    plt.title("Winter Energy Demand Anomalies (Deseasonalized & Standardized)")
+    plt.ylabel("Anomaly (Z-score)")
+    plt.xlabel("Date")
+    plt.grid(True, alpha=0.6)
+    plt.legend()
+    plt.tight_layout()
+    st.pyplot(plt.gcf())      # ⬅️ instead of plt.show()
+    
+    
+    # 6. Winter severity by true winter year
+    # -------------------------------
+    plt.figure(figsize=(12, 5))
+    plt.plot(winter_severity.index, winter_severity.values, "-o")
+    plt.title("Winter Severity Index (Mean Deseasonalized Demand per Winter)")
+    plt.xlabel("Winter Year (Dec–Feb grouped)")
+    plt.ylabel("Mean Deseasonalized Demand (M kWh)")
+    plt.grid(True, alpha=0.6)
+    plt.tight_layout()
+    st.pyplot(plt.gcf())      # ⬅️ instead of plt.show()
+    
+    
+    # 7. Highlight strong winter months on original series
+    # -------------------------------
+    plt.figure(figsize=(12, 6))
+    plt.plot(df_clean.index, df_clean["Original"], color="lightgray", label="Original Demand")
+    plt.scatter(
+        strong_winter_months.index,
+        strong_winter_months["Original"],
+        color="red",
+        s=60,
+        label="Unusually Strong Winter Month"
+    )
+    plt.title("Original Demand with Strong Winter Months Highlighted")
+    plt.ylabel("Million kilowatthours")
+    plt.xlabel("Date")
+    plt.grid(True, alpha=0.6)
+    plt.legend()
+    plt.tight_layout()
+    st.pyplot(plt.gcf())      # ⬅️ instead of plt.show()
+
 # --- Tabs at the top ---
-tab_dashboard, trends, tab_notes = st.tabs(["📊 ENSO Analysis", "📝 Trends","Notes and Methods"])
+time_series ,tab_dashboard, trends, tab_notes = st.tabs(["Forecasting Energy Demand","📊 ENSO Analysis", "📝 Trends","Notes and Methods"])
+
+with time_series:
+    st.markdown("""
+    The following plots are Time Series Analysis removing the seasonailty in the annual Michigan energy demand
+    """)
+    df_ts = pd.read_csv("data/Retail_sales_of_electricity_monthly_res.csv", low_memory=False)
+    time_series(df_ts)
+
 
 with tab_dashboard:
     st.markdown("""
