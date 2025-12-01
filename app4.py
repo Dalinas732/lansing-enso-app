@@ -9,7 +9,8 @@ from pathlib import Path
 from PIL import Image
 from statsmodels.tsa.seasonal import seasonal_decompose
 import matplotlib.pyplot as plt
-
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
 
 st.set_page_config(
     page_title="Michigan Temperature & ENSO Dashboard",
@@ -935,6 +936,105 @@ def time_series(df):
     plt.tight_layout()
     st.pyplot(plt.gcf())      # ⬅️ instead of plt.show()
 
+### Machine Learning Methood 1
+def ml_1(df):
+    """
+    Machine Learning Model #1:
+    Predict winter anomaly class from ENSO index using a Random Forest.
+    Displays a discrete-color scatter plot in Streamlit.
+    """
+
+    st.subheader("Machine Learning Model 1: ENSO → Winter Severity Prediction")
+
+    # ----------------------------------------------------
+    # 1) Build winter_summary from df
+    # ----------------------------------------------------
+    # Expect df_clean or similar: must have columns:
+    # ["Winter_Year", "ENSO_encoded", "Anomaly_Class"]
+    # If your df is named differently, adjust the selections.
+
+    winter_summary = df.copy()
+
+    class_mapping = {
+        "-2: Far Below Normal": -2,
+        "-1: Below Normal": -1,
+        "0: Normal": 0,
+        "+1: Above Normal": 1,
+        "+2: Far Above Normal": 2
+    }
+
+    if 'Anomaly_Class_Encoded' not in winter_summary.columns:
+        winter_summary['Anomaly_Class_Encoded'] = winter_summary['Anomaly_Class'].map(class_mapping)
+
+    # ----------------------------------------------------
+    # 2) Prepare data for ML
+    # ----------------------------------------------------
+    X = winter_summary[['ENSO_encoded']].copy()
+    y = winter_summary['Anomaly_Class_Encoded'].copy()
+
+    # Drop missing rows
+    mask = X['ENSO_encoded'].notna() & y.notna()
+    X = X[mask]
+    y = y[mask]
+    winter_summary = winter_summary[mask].copy()
+
+    # ----------------------------------------------------
+    # 3) Train/test split
+    # ----------------------------------------------------
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.1, random_state=42
+    )
+
+    # ----------------------------------------------------
+    # 4) Train Random Forest
+    # ----------------------------------------------------
+    rf_model = RandomForestClassifier(
+        n_estimators=200,
+        random_state=42,
+        class_weight="balanced"
+    )
+    rf_model.fit(X_train, y_train)
+
+    # ----------------------------------------------------
+    # 5) Predict for all winters
+    # ----------------------------------------------------
+    winter_summary['RF_Predicted_Class'] = rf_model.predict(X)
+
+    # ----------------------------------------------------
+    # 6) Visualization
+    # ----------------------------------------------------
+    unique_classes = sorted(winter_summary['RF_Predicted_Class'].unique())
+    colors = plt.cm.tab10(np.linspace(0, 1, len(unique_classes)))
+
+    color_map = {cls: colors[i] for i, cls in enumerate(unique_classes)}
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+
+    for cls in unique_classes:
+        subset = winter_summary[winter_summary['RF_Predicted_Class'] == cls]
+        ax.scatter(
+            subset['ENSO_encoded'],
+            subset['Anomaly_Class_Encoded'],
+            color=color_map[cls],
+            label=f"Predicted Class {cls}",
+            s=120,
+            alpha=0.85,
+            edgecolors='black'
+        )
+
+    ax.set_title(
+        "True Anomaly Class vs ENSO\nColored by Predicted Class (Discrete)",
+        fontsize=14, weight='bold'
+    )
+    ax.set_xlabel("ENSO Encoded (El Niño → La Niña)", fontsize=12)
+    ax.set_ylabel("True Anomaly Class (Encoded)", fontsize=12)
+    ax.grid(alpha=0.4)
+    ax.legend(title="Predicted Class", bbox_to_anchor=(1.05, 1), loc='upper left')
+    fig.tight_layout()
+
+    st.pyplot(fig)
+
+
 # --- Tabs at the top ---
 time_series_dashboard ,tab_dashboard, trends, tab_notes = st.tabs(["Forecasting Energy Demand","📊 ENSO Analysis", "📝 Trends","Notes and Methods"])
 
@@ -944,7 +1044,11 @@ with time_series_dashboard:
     """)
     df_ts = pd.read_csv("data/Retail_sales_of_electricity_monthly_res.csv", skiprows=4)
     time_series(df_ts)
-
+    st.markdown("""
+    Using Random Forest Classifer to predict the energy demand based on ENSO alone.
+    """)
+    winter_summar_df = pd.read_csv("data/winter_summary_with_ENSO.csv", low_memory=False)
+    ml_1(winter_summary_df)
 
 with tab_dashboard:
     st.markdown("""
