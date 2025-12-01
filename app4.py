@@ -8,6 +8,7 @@ import plotly.express as px
 from pathlib import Path
 from PIL import Image
 from statsmodels.tsa.seasonal import seasonal_decompose
+import matplotlib.pyplot as plt
 
 
 st.set_page_config(
