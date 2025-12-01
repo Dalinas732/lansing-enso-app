@@ -1324,11 +1324,39 @@ with time_series_dashboard:
 with tab_notes:
     # Put assignment notes, methodology, references, or TODOs here
     st.markdown("""
-    **Notes / Methods**
-    Data source: (1) Lansing Weather Station (2) El Nino-Southern Oscillation (ENSO) Data set (3) Michigan Energy database
-    
-    This app explores lansing weather trends, how the ENSO phase affects its winters. And if it's possible to forecast energy demand purely based on ENSO prediction since this is forecasted months in advance before the season.
-    
-    Daily values were captured from the Lansing weather station and subjected to a variety of analyses. Annual winter temperatures were averaged to support comparison with both ENSO conditions and regional energy demand. Missing observations were addressed using interpolation-based imputation methods. ENSO categories were encoded into numerical values to enable statistical and machine-learning workflows. Finally, all three datasets were merged into a single, integrated dataset used for forecasting winter energy demand.
+    ## Notes / Methods
+
+**Data Sources:**  
+1. Lansing Weather Station  
+2. El Niño–Southern Oscillation (ENSO) Index  
+3. Michigan Energy Demand Database  
+
+This application explores Lansing weather trends, how ENSO phases influence winter conditions, and whether it is possible to forecast winter energy demand using only ENSO predictions—an attractive idea because ENSO is forecasted months before winter begins.
+
+Daily values were collected from the Lansing weather station and analyzed to characterize temperature variability. Winter temperatures were averaged to enable comparison with ENSO conditions and seasonal energy demand. Missing observations were addressed using interpolation-based imputation. ENSO phases were encoded from categorical to numerical values to support machine-learning workflows. Finally, all three datasets were merged into a unified dataset used for forecasting winter energy demand.
+
+### Why a Classifier Instead of a Regression Model?
+
+The goal of the machine-learning component is **not** to predict exact winter temperatures or energy-demand values—doing so would require modeling the full complexity of Midwestern winter weather, which is influenced by many factors beyond ENSO. Instead, the objective is to predict the **severity category** of each winter:  
+- Far Below Normal  
+- Below Normal  
+- Normal  
+- Above Normal  
+- Far Above Normal  
+
+These discrete categories represent meaningful operational thresholds for energy demand. Because the task is to assign winters to **predefined severity classes**, a classifier is more appropriate and more stable than a regression model.
+
+### Why Random Forest and Gradient Boosting?
+
+Two tree-based classifiers were selected:
+
+**1. Random Forest Classifier**  
+Random Forests handle nonlinear relationships well, perform reliably on small datasets, and are robust to noise. They provide a strong baseline classifier for mapping ENSO conditions to winter severity classes.
+
+**2. Gradient Boosting Classifier**  
+Gradient Boosting builds a sequence of shallow trees that correct each other’s errors. It often outperforms Random Forests on low-dimensional problems and can capture subtle, nonlinear patterns between ENSO and winter severity.
+
+These two algorithms complement each other: Random Forest provides stability and interpretability, while Gradient Boosting offers higher resolution on small, structured climate-related datasets.
+
 
     """)
