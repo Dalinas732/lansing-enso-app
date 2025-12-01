@@ -955,8 +955,10 @@ with tab_notes:
     # Put assignment notes, methodology, references, or TODOs here
     st.markdown("""
     **Notes / Methods**
-    - Data source: Lansing Weather Station and El Nino-Southern Oscillation (ENSO) Data set.
-    - ENSO phase: DJF (Dec of previous year + Jan, Feb of current year)
-    - Absolute plot: monthly means per Year×Month (complete years only)
-    - Violin plot: DJF average per Season_Year with categorical ENSO labeling
+    Data source: (1) Lansing Weather Station (2) El Nino-Southern Oscillation (ENSO) Data set (3) Michigan Energy database
+    
+    This app explores lansing weather trends, how the ENSO phase affects its winters. And if it's possible to forecast energy demand purely based on ENSO prediction since this is forecasted months in advance before the season.
+    
+    I combined theses three data sources and spliced them to be the same dimensions. Unfortunetly the energy demand data spans the last 20 years so only 20 datapoints. Statistics are low but for proof of concept I still deploy machine learning models.
+
     """)
