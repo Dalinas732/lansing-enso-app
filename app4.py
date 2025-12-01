@@ -867,7 +867,7 @@ def time_series(df):
     plt.grid(True, alpha=0.6)
     
     plt.tight_layout()
-    st.pyplot(plt.gcf())      # ⬅️ instead of plt.show()
+    st.pyplot(plt.gcf(),use_container_width=False)      # ⬅️ instead of plt.show()
 
     # -------------------------------
     # 4. Winter-month data + Winter_Year
@@ -901,7 +901,7 @@ def time_series(df):
     plt.grid(True, alpha=0.6)
     plt.legend()
     plt.tight_layout()
-    st.pyplot(plt.gcf())      # ⬅️ instead of plt.show()
+    st.pyplot(plt.gcf(),use_container_width=False)      # ⬅️ instead of plt.show()
     
     
     # 6. Winter severity by true winter year
@@ -914,7 +914,7 @@ def time_series(df):
     plt.ylabel("Mean Deseasonalized Demand (M kWh)")
     plt.grid(True, alpha=0.6)
     plt.tight_layout()
-    st.pyplot(plt.gcf())      # ⬅️ instead of plt.show()
+    st.pyplot(plt.gcf(),use_container_width=False)      # ⬅️ instead of plt.show()
     
     
     # 7. Highlight strong winter months on original series
@@ -934,7 +934,7 @@ def time_series(df):
     plt.grid(True, alpha=0.6)
     plt.legend()
     plt.tight_layout()
-    st.pyplot(plt.gcf())      # ⬅️ instead of plt.show()
+    st.pyplot(plt.gcf(),use_container_width=False)      # ⬅️ instead of plt.show()
 
 ### Machine Learning Methood 1
 def ml_1(df):
