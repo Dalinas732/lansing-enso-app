@@ -1008,7 +1008,7 @@ def ml_1(df):
 
     color_map = {cls: colors[i] for i, cls in enumerate(unique_classes)}
 
-    fig, ax = plt.subplots(figsize=(4, 4))
+    fig, ax = plt.subplots(figsize=(12, 8))
 
     for cls in unique_classes:
         subset = winter_summary[winter_summary['RF_Predicted_Class'] == cls]
