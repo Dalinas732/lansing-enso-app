@@ -1038,7 +1038,7 @@ def ml_1(df):
     fig.tight_layout()
     plt.subplots_adjust(left=0.15)   # ⬅️ Reserve space for left labels
     
-    st.pyplot(fig)
+    st.pyplot(fig,use_container_width=False)
 
 
 # --- Tabs at the top ---
