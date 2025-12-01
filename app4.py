@@ -1138,7 +1138,7 @@ def ml_2(df):
 
 
 # --- Tabs at the top ---
-time_series_dashboard ,tab_dashboard, trends, tab_notes = st.tabs(["Forecasting Energy Demand","📊 ENSO Analysis", "📝 Trends","Notes and Methods"])
+tab_dashboard, trends, time_series_dashboard, tab_notes = st.tabs(["📊 ENSO Analysis", "📝 Trends","Forecasting Energy Demand","Notes and Methods"])
 
 
 with tab_dashboard:
